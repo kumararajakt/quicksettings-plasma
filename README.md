@@ -9,7 +9,10 @@ the Cinnamon applet, and keeps its layout.
 
 ## What it does
 
-- **Panel button** - battery icon and percentage. Scroll over it to change the screen brightness.
+- **Panel button** - battery icon and percentage, plus the application tray icons the
+  widget hosts (hidden while no app provides one). Scroll over it to change the screen
+  brightness. Each tray icon handles its own clicks: left activates the app, middle
+  secondary-activates, right opens its menu.
 - **Header** - battery readout (opens the power settings), screenshot, System Settings, lock, shut down.
 - **Sliders** - volume (click the icon to mute, the arrow lists output and input devices),
   one brightness slider per display, and contrast for DDC/CI monitors.
@@ -41,9 +44,16 @@ and `pactl` each time the popup opens. Here the state is live:
 | Battery | UPower's `DisplayDevice` |
 | Monitor contrast | `ddcutil` (Plasma has no contrast control) |
 | Fan Curve | `fw-fanctrl` (Framework laptops) |
+| App tray icons | the `org.kde.StatusNotifierWatcher` D-Bus interface, as a host: menus are DBusMenu over D-Bus |
 
 So there is no prefetching, caching or re-reading after an action: a pill's subtitle is
 a binding, and the Wi-Fi list updates itself while it is open.
+
+The widget also hosts the same application tray icons Plasma's own tray shows -
+Telegram, Discord, and the rest - on the panel button itself. It registers with the
+watcher alongside Plasma's tray (an icon can appear in both places; hide the apps in
+System Tray Settings → Entries to keep them here alone), draws each icon from its
+theme name or its pixel data, and speaks DBusMenu over D-Bus for right-click menus.
 
 The network and audio modules are internal to Plasma. They are what Plasma's own applets
 use and many third-party widgets rely on them, but a Plasma upgrade can change them. Each

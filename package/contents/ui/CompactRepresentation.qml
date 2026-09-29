@@ -21,6 +21,9 @@ MouseArea {
     // No room for text beside the icon in a vertical panel.
     readonly property bool showLabel: hasBattery && config.panelShowPercentage && !vertical
 
+    readonly property bool showTrayIcons: config.panelShowTrayIcons && app.tray.available
+    readonly property var trayItems: showTrayIcons ? app.tray.items : []
+
     readonly property int iconSize: Kirigami.Units.iconSizes.roundedIconSize(
         Math.min(Kirigami.Units.iconSizes.medium, vertical ? width : height))
 
@@ -74,6 +77,56 @@ MouseArea {
             visible: compact.showLabel
             text: i18nc("battery percentage", "%1%", compact.app.battery.percent)
             textFormat: Text.PlainText
+        }
+
+        Repeater {
+            model: compact.trayItems
+
+            delegate: MouseArea {
+                id: trayArea
+
+                required property var modelData
+                readonly property var item: modelData
+
+                Layout.preferredWidth: compact.iconSize
+                Layout.preferredHeight: compact.iconSize
+                Layout.alignment: Qt.AlignVCenter
+                hoverEnabled: true
+                acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+
+                Accessible.name: item ? (item.title !== "" ? item.title : item.id) : ""
+                Accessible.role: Accessible.Button
+
+                onClicked: mouse => {
+                    if (!trayArea.item) {
+                        return;
+                    }
+                    if (mouse.button === Qt.RightButton
+                            || (mouse.button === Qt.LeftButton && trayArea.item.itemIsMenu)) {
+                        compact.app.tray.requestMenu(trayArea.item, trayArea);
+                    } else if (mouse.button === Qt.MiddleButton) {
+                        compact.app.tray.secondaryActivate(trayArea.item);
+                    } else {
+                        compact.app.tray.activate(trayArea.item);
+                    }
+                }
+
+                onWheel: wheel => {
+                    wheel.accepted = false;
+                    if (trayArea.item) {
+                        compact.app.tray.scroll(trayArea.item, wheel.angleDelta.y, false);
+                    }
+                }
+
+                Kirigami.Icon {
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    source: trayArea.item && trayArea.item.iconThemeName !== ""
+                            ? trayArea.item.iconThemeName : (trayArea.item ? String(trayArea.item.iconUrl) : "")
+                    fallback: "application-x-executable-symbolic"
+                    active: trayArea.containsMouse
+                }
+            }
         }
     }
 }

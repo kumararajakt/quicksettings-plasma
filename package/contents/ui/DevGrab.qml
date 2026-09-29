@@ -129,6 +129,60 @@ Item {
                                   "second", grab.secondAwake.active, grab.secondAwake.cookie)
     }
 
+    Timer {
+        interval: 3000
+        running: grab.plasmoidItem !== null && Qt.application.arguments.includes("qs-menu-test")
+        onTriggered: {
+            const app = grab.plasmoidItem;
+            const item = app.tray.items[0];
+            if (!item) {
+                console.warn("qs-menu-test: no tray items");
+                Qt.quit();
+                return;
+            }
+            console.warn("qs-menu-test: item", item.id, "themeIcon", item.iconThemeName,
+                         "menuPath", item.menuPath);
+            app.tray.requestMenu(item, app.fullRepresentationItem);
+        }
+    }
+    Timer {
+        interval: 5500
+        running: grab.plasmoidItem !== null && Qt.application.arguments.includes("qs-menu-test")
+        onTriggered: {
+            const app = grab.plasmoidItem;
+            const item = app.tray.items[0];
+            const m = item && item._menu;
+            console.warn("qs-menu-test: client?", m !== null && m !== undefined,
+                         "nodes:", m ? Object.keys(m.items).length : 0,
+                         "status:", m && m.menu ? m.menu.status : "no menu object",
+                         "(Opening 0, Open 1, Closing 2, Closed 3)");
+            if (!Qt.application.arguments.includes("qs-menu-fire")) {
+                Qt.quit();
+            }
+        }
+    }
+
+    Timer {
+        interval: 6000
+        running: grab.plasmoidItem !== null && Qt.application.arguments.includes("qs-menu-fire")
+        onTriggered: {
+            const item = grab.plasmoidItem.tray.items[0];
+            const m = item && item._menu;
+            const proxy = m && m.menu;
+            if (!proxy) {
+                console.warn("qs-menu-fire: no menu proxy");
+                return;
+            }
+            console.warn("qs-menu-fire: firing id 3 through the client");
+            m._fire(3);
+        }
+    }
+    Timer {
+        interval: 8000
+        running: grab.plasmoidItem !== null && Qt.application.arguments.includes("qs-menu-fire")
+        onTriggered: console.warn("qs-menu-fire: done")
+    }
+
     // `qs-check-shell` runs the same atomic command through two command runners
     // at once. mkdir can only succeed once, so two successes mean the engine
     // ran it once and gave both runners the one result.

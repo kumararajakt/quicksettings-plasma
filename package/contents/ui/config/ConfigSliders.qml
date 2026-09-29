@@ -10,6 +10,7 @@ KCM.SimpleKCM {
     property alias cfg_showMonitorContrast: showMonitorContrast.checked
     property alias cfg_panelShowBatteryIcon: panelShowBatteryIcon.checked
     property alias cfg_panelShowPercentage: panelShowPercentage.checked
+    property alias cfg_panelShowTrayIcons: panelShowTrayIcons.checked
 
     Kirigami.FormLayout {
         QQC2.CheckBox {
@@ -63,6 +64,10 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: panelShowPercentage
             text: i18n("Show the battery percentage")
+        }
+        QQC2.CheckBox {
+            id: panelShowTrayIcons
+            text: i18n("Show application tray icons")
         }
     }
 }

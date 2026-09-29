@@ -41,6 +41,7 @@
   <group name="Panel">
     <entry name="panelShowBatteryIcon" type="Bool"><default>true</default></entry>
     <entry name="panelShowPercentage" type="Bool"><default>true</default></entry>
+    <entry name="panelShowTrayIcons" type="Bool"><default>true</default></entry>
   </group>
 
   <group name="Behaviour">
