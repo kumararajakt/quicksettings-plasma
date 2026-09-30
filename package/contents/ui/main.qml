@@ -26,6 +26,7 @@ PlasmoidItem {
     readonly property alias contrast: contrast
     readonly property alias tray: tray
     readonly property alias notifications: notifications
+    readonly property alias privacy: privacy
 
     function openSettings(module) {
         KCMUtils.KCMLauncher.openSystemSettings(module);
@@ -119,6 +120,7 @@ PlasmoidItem {
     Backends.Notifications {
         id: notifications
     }
+    Backends.Privacy { id: privacy }
 
     // A monitor swap changes which DDC/CI displays exist. Debounced, because
     // the display list changes several times through a swap and a monitor

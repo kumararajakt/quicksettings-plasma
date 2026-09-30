@@ -24,6 +24,8 @@ MouseArea {
     readonly property bool showTrayIcons: config.panelShowTrayIcons && app.tray.available
     readonly property var trayItems: showTrayIcons ? app.tray.items : []
 
+    readonly property bool showPrivacy: config.panelShowPrivacy && app.privacy.active.length > 0
+
     readonly property int iconSize: Kirigami.Units.iconSizes.roundedIconSize(
         Math.min(Kirigami.Units.iconSizes.medium, vertical ? width : height))
 
@@ -77,6 +79,77 @@ MouseArea {
             visible: compact.showLabel
             text: i18nc("battery percentage", "%1%", compact.app.battery.percent)
             textFormat: Text.PlainText
+        }
+
+        // Privacy and keyboard state, sitting beside the tray. Not controls:
+        // the icons only report, and the clicks are swallowed so they do not
+        // open the popup behind them.
+        MouseArea {
+            id: privacyArea
+
+            visible: compact.showPrivacy
+            Layout.preferredWidth: privacyRow.implicitWidth
+            Layout.preferredHeight: compact.iconSize
+            Layout.alignment: Qt.AlignVCenter
+            hoverEnabled: true
+            acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
+
+            PlasmaComponents.ToolTip {
+                text: compact.app.privacy.active.join(" · ")
+                visible: privacyArea.containsMouse
+            }
+
+            RowLayout {
+                id: privacyRow
+
+                anchors.centerIn: parent
+                spacing: Kirigami.Units.smallSpacing
+
+                Kirigami.Icon {
+                    visible: compact.app.privacy.cameraInUse
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: compact.iconSize
+                    Layout.preferredHeight: compact.iconSize
+                    source: "camera-on-symbolic"
+                    active: privacyArea.containsMouse
+                }
+                Kirigami.Icon {
+                    visible: compact.app.privacy.micInUse
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: compact.iconSize
+                    Layout.preferredHeight: compact.iconSize
+                    source: "audio-input-microphone-symbolic"
+                    active: privacyArea.containsMouse
+                }
+                Kirigami.Icon {
+                    visible: compact.app.privacy.screenInUse
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: compact.iconSize
+                    Layout.preferredHeight: compact.iconSize
+                    source: "camera-video-symbolic"
+                    active: privacyArea.containsMouse
+                }
+
+                Kirigami.Icon {
+                    visible: compact.app.privacy.capsLock
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: compact.iconSize
+                    Layout.preferredHeight: compact.iconSize
+                    source: "input-caps-on-symbolic"
+                    active: privacyArea.containsMouse
+                }
+                Kirigami.Icon {
+                    visible: compact.app.privacy.numLock
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: compact.iconSize
+                    Layout.preferredHeight: compact.iconSize
+                    // Breeze drops the symbolic Num Lock icon but still paints
+                    // this one in the text colour, so it recolours like the rest.
+                    source: "input-num-on"
+                    isMask: true
+                    active: privacyArea.containsMouse
+                }
+            }
         }
 
         Repeater {
