@@ -43,7 +43,7 @@ Item {
     readonly property real focusProgress: Math.max(sliderPanel.progress, gridPanel.progress)
 
     // Pills in grid order, before the visibility filter.
-    readonly property var tileOrder: ["wired", "bluetooth", "wifi", "vpn", "power", "fan", "nightlight", "awake", "airplane"]
+    readonly property var tileOrder: ["wired", "bluetooth", "wifi", "vpn", "power", "fan", "nightlight", "awake", "airplane", "dnd"]
     readonly property var visibleKeys: tileOrder.filter(key => tileVisible(key))
     readonly property real pillPitch: firstPill.implicitHeight + look.pillSpacing
 
@@ -58,6 +58,7 @@ Item {
         case "nightlight": return config.showNightLight && app.nightLight.available;
         case "awake": return config.showAwake;
         case "airplane": return config.showAirplane;
+        case "dnd": return config.showDnd && app.notifications.available;
         }
         return false;
     }
@@ -562,6 +563,15 @@ Item {
                     fallbackIconName: "network-flightmode-on"
                     active: full.app.network.airplaneMode
                     onToggled: full.app.network.setAirplane(!active)
+                }
+                Pill {
+                    key: "dnd"
+                    title: i18n("Do Not Disturb")
+                    iconName: "notifications-disabled-symbolic"
+                    fallbackIconName: "notifications-disabled"
+                    active: full.app.notifications.dnd
+                    subtitle: active ? i18n("On") : ""
+                    onToggled: full.app.notifications.setDnd(!active)
                 }
 
                 ExpansionPanel {

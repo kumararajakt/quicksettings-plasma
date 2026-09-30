@@ -15,6 +15,7 @@ KCM.SimpleKCM {
     property alias cfg_showAwake: showAwake.checked
     property alias cfg_showAirplane: showAirplane.checked
     property alias cfg_showNotifications: showNotifications.checked
+    property alias cfg_showDnd: showDnd.checked
     property alias cfg_bodyToggles: bodyToggles.checked
 
     Kirigami.FormLayout {
@@ -64,6 +65,10 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: showNotifications
             text: i18n("Notifications")
+        }
+        QQC2.CheckBox {
+            id: showDnd
+            text: i18n("Do Not Disturb")
         }
 
         Item {

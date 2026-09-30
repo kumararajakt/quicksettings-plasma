@@ -16,6 +16,7 @@
     <entry name="showAwake" type="Bool"><default>true</default></entry>
     <entry name="showAirplane" type="Bool"><default>true</default></entry>
     <entry name="showNotifications" type="Bool"><default>true</default></entry>
+    <entry name="showDnd" type="Bool"><default>true</default></entry>
     <!-- true: the pill toggles and the arrow opens its panel (GNOME's way round). -->
     <entry name="bodyToggles" type="Bool"><default>true</default></entry>
   </group>

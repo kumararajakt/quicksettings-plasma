@@ -33,13 +33,6 @@ ColumnLayout {
         Layout.fillWidth: true
         spacing: Kirigami.Units.smallSpacing
 
-        PlasmaComponents.Switch {
-            icon.name: "notifications-disabled"
-            text: i18n("Do not disturb")
-            checked: notificationsRoot.app.notifications.dnd
-            onToggled: notificationsRoot.app.notifications.setDnd(checked)
-        }
-
         Item {
             Layout.fillWidth: true
         }
