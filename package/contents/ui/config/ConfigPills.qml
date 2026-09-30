@@ -14,6 +14,7 @@ KCM.SimpleKCM {
     property alias cfg_showNightLight: showNightLight.checked
     property alias cfg_showAwake: showAwake.checked
     property alias cfg_showAirplane: showAirplane.checked
+    property alias cfg_showNotifications: showNotifications.checked
     property alias cfg_bodyToggles: bodyToggles.checked
 
     Kirigami.FormLayout {
@@ -59,6 +60,10 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: showAirplane
             text: i18n("Airplane Mode")
+        }
+        QQC2.CheckBox {
+            id: showNotifications
+            text: i18n("Notifications")
         }
 
         Item {

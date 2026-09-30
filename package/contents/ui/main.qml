@@ -25,6 +25,7 @@ PlasmoidItem {
     readonly property alias fan: fan
     readonly property alias contrast: contrast
     readonly property alias tray: tray
+    readonly property alias notifications: notifications
 
     function openSettings(module) {
         KCMUtils.KCMLauncher.openSystemSettings(module);
@@ -114,6 +115,9 @@ PlasmoidItem {
     }
     Backends.SniHost {
         id: tray
+    }
+    Backends.Notifications {
+        id: notifications
     }
 
     // A monitor swap changes which DDC/CI displays exist. Debounced, because

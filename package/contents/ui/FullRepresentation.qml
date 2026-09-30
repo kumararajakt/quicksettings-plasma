@@ -188,6 +188,7 @@ Item {
                 full.app.keepAwake.refresh();
                 full.app.fan.refresh();
                 full.app.contrast.scan(false);
+                full.app.notifications.markAllRead();
             } else {
                 full.collapse();
             }
@@ -581,6 +582,19 @@ Item {
                     Layout.column: 0
                     Layout.columnSpan: 2
                 }
+            }
+
+            Rectangle {
+                visible: full.config.showNotifications && full.app.notifications.available
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color: look.rule
+            }
+
+            Panels.NotificationsPanel {
+                visible: full.config.showNotifications && full.app.notifications.available
+                app: full.app
+                style: look
             }
         }
     }
