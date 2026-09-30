@@ -595,14 +595,14 @@ Item {
             }
 
             Rectangle {
-                visible: full.config.showNotifications && full.app.notifications.available
+                visible: full.config.showNotifications && full.app.notifications.available && full.app.notifications.count > 0
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
                 color: look.rule
             }
 
             Panels.NotificationsPanel {
-                visible: full.config.showNotifications && full.app.notifications.available
+                visible: full.config.showNotifications && full.app.notifications.available && full.app.notifications.count > 0
                 app: full.app
                 style: look
             }
