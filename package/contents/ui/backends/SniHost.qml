@@ -236,8 +236,17 @@ Item {
             property bool itemIsMenu: false
             property string menuPath: ""
 
-            property string iconThemeName: ""
-            property url iconUrl: ""
+            property string status: ""
+            property string attentionIconName: ""
+            property var iconPixmap: null
+            property var attentionIconPixmap: null
+
+            readonly property bool usesAttentionIcon: row.status === "NeedsAttention"
+                    && (row.attentionIconName !== "" || sni._hasPixmap(row.attentionIconPixmap))
+            readonly property string activeIconName: row.usesAttentionIcon
+                    ? row.attentionIconName : row.iconName
+            readonly property var activeIconPixmap: row.usesAttentionIcon
+                    ? row.attentionIconPixmap : row.iconPixmap
 
             property var _menu: null
 
@@ -270,6 +279,7 @@ Item {
                 row._apply("Id", p.Id);
                 row._apply("Title", p.Title);
                 row._apply("ToolTip", p.ToolTip);
+                row._apply("Status", p.Status);
                 row._apply("IconName", p.IconName);
                 row._apply("AttentionIconName", p.AttentionIconName);
                 row._apply("IconPixmap", p.IconPixmap);
@@ -292,18 +302,20 @@ Item {
                 case "ToolTip":
                     row.tooltip = row._tooltipText(value);
                     break;
+                case "Status":
+                    row.status = String(value);
+                    break;
                 case "IconName":
+                    row.iconName = String(value);
+                    break;
                 case "AttentionIconName":
-                    if (String(value) !== "") {
-                        row.iconThemeName = String(value);
-                        row.iconUrl = "";
-                    }
+                    row.attentionIconName = String(value);
                     break;
                 case "IconPixmap":
+                    row.iconPixmap = value;
+                    break;
                 case "AttentionIconPixmap":
-                    if (row.iconThemeName === "") {
-                        row._pixmapIcon(value);
-                    }
+                    row.attentionIconPixmap = value;
                     break;
                 case "ItemIsMenu":
                     row.itemIsMenu = value === true;
@@ -332,15 +344,11 @@ Item {
                 return String(t[2] || "") || String(t[3] || "") || String(t[1] || "") || String(t[0] || "");
             }
 
-            function _pixmapIcon(pixmaps) {
-                if (!pixmaps || !pixmaps.length) {
-                    return;
+            function iconUrlFor(targetSize) {
+                if (row.activeIconName !== "") {
+                    return "";
                 }
-                const img = pixmaps[pixmaps.length - 1];
-                if (!img || !img.width || !img.height || !img.bytes) {
-                    return;
-                }
-                row.iconUrl = sni._argbToDataUrl(img.width, img.height, img.bytes);
+                return sni._pixmapToSvgUrl(row.activeIconPixmap, targetSize);
             }
 
             function ensureMenu(anchorItem) {
@@ -377,21 +385,32 @@ Item {
         DbusMenu {}
     }
 
-    function _argbToDataUrl(width, height, bytes) {
-        let svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '" shape-rendering="crispEdges">';
-        for (let y = 0; y < height; ++y) {
-            const srcRow = 4 * y * width;
+    function _pixmapToSvgUrl(pixmaps, targetSide) {
+        const img = sni._pickPixmap(pixmaps, targetSide);
+        if (!img) {
+            return "";
+        }
+        const srcW = sni._intOf(img[0]);
+        const srcH = sni._intOf(img[1]);
+        const bytes = img[2];
+        const outW = targetSide > 0 ? Math.min(srcW, targetSide) : srcW;
+        const outH = targetSide > 0 ? Math.min(srcH, targetSide) : srcH;
+        const xStep = srcW / outW;
+        const yStep = srcH / outH;
+        const rects = [];
+        for (let y = 0; y < outH; ++y) {
+            const srcRow = 4 * Math.floor(y * yStep) * srcW;
             let runStart = -1;
             let runColor = "";
-            for (let x = 0; x <= width; ++x) {
-                const i = srcRow + 4 * x;
+            for (let x = 0; x <= outW; ++x) {
+                const i = srcRow + 4 * Math.floor(x * xStep);
                 let color = "";
-                if (x < width) {
-                    const a = sni._byteAt(bytes, i);
-                    if (a !== 0) {
-                        const r = sni._byteAt(bytes, i + 1);
-                        const g = sni._byteAt(bytes, i + 2);
-                        const b = sni._byteAt(bytes, i + 3);
+                if (x < outW) {
+                    const a = sni._intOf(bytes[i]);
+                    if (a > 0) {
+                        const r = sni._intOf(bytes[i + 1]);
+                        const g = sni._intOf(bytes[i + 2]);
+                        const b = sni._intOf(bytes[i + 3]);
                         color = a === 255
                             ? "#" + sni._hex(r) + sni._hex(g) + sni._hex(b)
                             : "rgba(" + r + "," + g + "," + b + "," + (a / 255).toFixed(3) + ")";
@@ -399,15 +418,49 @@ Item {
                 }
                 if (color !== runColor) {
                     if (runColor !== "") {
-                        svg += '<rect x="' + runStart + '" y="' + y + '" width="' + (x - runStart) + '" height="1" fill="' + runColor + '"/>';
+                        rects.push('<rect x="' + runStart + '" y="' + y + '" width="' + (x - runStart)
+                                   + '" height="1" fill="' + runColor + '"/>');
                     }
                     runStart = x;
                     runColor = color;
                 }
             }
         }
-        svg += '</svg>';
-        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+        return "data:image/svg+xml;utf8," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + outW + '" height="' + outH
+            + '" viewBox="0 0 ' + outW + " " + outH + '">' + rects.join("") + "</svg>");
+    }
+
+    function _hasPixmap(pixmaps) {
+        return sni._pickPixmap(pixmaps, 0) !== null;
+    }
+
+    function _pickPixmap(pixmaps, targetSide) {
+        if (!pixmaps || !pixmaps.length) {
+            return null;
+        }
+        let bigEnough = null;
+        let bigEnoughSide = 0;
+        let largest = null;
+        let largestSide = 0;
+        for (let i = 0; i < pixmaps.length; ++i) {
+            const img = pixmaps[i];
+            const w = sni._intOf(img[0]);
+            const h = sni._intOf(img[1]);
+            if (w <= 0 || h <= 0 || !img[2] || img[2].length < w * h * 4) {
+                continue;
+            }
+            const side = Math.max(w, h);
+            if (side >= targetSide && (bigEnough === null || side < bigEnoughSide)) {
+                bigEnough = img;
+                bigEnoughSide = side;
+            }
+            if (side > largestSide) {
+                largest = img;
+                largestSide = side;
+            }
+        }
+        return bigEnough !== null ? bigEnough : largest;
     }
 
     function _intOf(v) {
@@ -420,10 +473,6 @@ Item {
         }
         const n = Number(v);
         return isNaN(n) ? -1 : n;
-    }
-
-    function _byteAt(bytes, i) {
-        return bytes[i] !== undefined ? bytes[i] : 0;
     }
 
     function _hex(v) {

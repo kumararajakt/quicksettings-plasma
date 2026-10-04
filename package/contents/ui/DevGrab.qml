@@ -140,7 +140,8 @@ Item {
                 Qt.quit();
                 return;
             }
-            console.warn("qs-menu-test: item", item.id, "themeIcon", item.iconThemeName,
+            console.warn("qs-menu-test: item", item.id, "icon", item.activeIconName,
+                         "pixmap", item.iconUrlFor(22).length > 0,
                          "menuPath", item.menuPath);
             app.tray.requestMenu(item, app.fullRepresentationItem);
         }
@@ -198,6 +199,30 @@ Item {
         }
     }
 
+    Timer {
+        interval: 2500
+        running: grab.plasmoidItem !== null && Qt.application.arguments.includes("qs-tray-dump")
+        onTriggered: {
+            const tray = grab.plasmoidItem.tray;
+            console.warn("qs-tray-dump: watcherUp", tray.watcherUp, "count", tray.count);
+            for (const item of tray.items) {
+                const url = item.iconUrlFor(22);
+                const svg = url === "" ? "" : decodeURIComponent(url.split("utf8,")[1] || "");
+                console.warn("qs-tray-dump:", item.id,
+                             "status=" + item.status,
+                             "name='" + item.iconName + "'",
+                             "attnName='" + item.attentionIconName + "'",
+                             "usesAttn=" + item.usesAttentionIcon,
+                             "active='" + item.activeIconName + "'",
+                             "hasPixmap=" + tray._hasPixmap(item.activeIconPixmap),
+                             "urlLen=" + url.length,
+                             "rects=" + (svg.match(/<rect/g) || []).length,
+                             "viewBox=" + ((svg.match(/viewBox="([^"]*)"/) || [, ""])[1]),
+                             "colours=" + Array.from(new Set((svg.match(/#[0-9a-f]{6}/g) || []))).join(","));
+            }
+        }
+    }
+
     // `qs-delay=<ms>` waits longer before grabbing, for the slow readers
     // (ddcutil takes a few seconds to find a monitor).
     readonly property int delay: {
@@ -205,12 +230,16 @@ Item {
         return arg ? parseInt(arg.slice("qs-delay=".length), 10) || 2000 : 2000;
     }
 
+    readonly property bool grabCompact: Qt.application.arguments.includes("qs-grab-compact")
+
     Timer {
         // Long enough for the backends, and for a panel to finish unfolding.
         interval: grab.delay
         running: grab.plasmoidItem !== null
         onTriggered: {
-            const target = grab.plasmoidItem.fullRepresentationItem;
+            const target = grab.grabCompact
+                ? grab.plasmoidItem.compactRepresentationItem
+                : grab.plasmoidItem.fullRepresentationItem;
             if (!target) {
                 console.warn("qs-grab: no full representation to grab");
                 Qt.quit();

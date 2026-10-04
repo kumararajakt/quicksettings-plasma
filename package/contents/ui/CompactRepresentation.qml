@@ -160,6 +160,9 @@ MouseArea {
 
                 required property var modelData
                 readonly property var item: modelData
+                readonly property string iconName: item ? item.activeIconName : ""
+                readonly property string iconPixmap: item
+                        ? item.iconUrlFor(compact.iconSize) : ""
 
                 Layout.preferredWidth: compact.iconSize
                 Layout.preferredHeight: compact.iconSize
@@ -194,10 +197,19 @@ MouseArea {
                 Kirigami.Icon {
                     anchors.fill: parent
                     anchors.margins: 1
-                    source: trayArea.item && trayArea.item.iconThemeName !== ""
-                            ? trayArea.item.iconThemeName : (trayArea.item ? String(trayArea.item.iconUrl) : "")
+                    source: trayArea.iconName
                     fallback: "application-x-executable-symbolic"
                     active: trayArea.containsMouse
+                }
+
+                Image {
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    source: trayArea.iconPixmap
+                    sourceSize.width: compact.iconSize
+                    sourceSize.height: compact.iconSize
+                    fillMode: Image.PreserveAspectFit
+                    opacity: trayArea.containsMouse ? 0.7 : 1.0
                 }
             }
         }
