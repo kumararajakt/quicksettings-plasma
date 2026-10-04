@@ -108,6 +108,8 @@ Item {
         onTriggered: full.open(full.pendingKey)
     }
 
+    readonly property int padding: Kirigami.Units.largeSpacing
+
     // The window is as tall as the content with every panel shut, and stays
     // that way. The height is only ever taken while nothing is open or moving:
     // mid-animation it is pieced together from layout sizes that update one
@@ -115,10 +117,10 @@ Item {
     // frame. It is applied a frame late so that several steps make one resize.
     readonly property bool idle: expandedKey === "" && sliderPanel.settled && gridPanel.settled
     readonly property real contentHeight: Math.ceil(header.implicitHeight + column.spacing + column.implicitHeight
-        - sliderPanel.implicitHeight - gridPanel.implicitHeight)
+        - sliderPanel.implicitHeight - gridPanel.implicitHeight) + 2 * padding
     // With most pills hidden the content is short; a panel still needs room.
     readonly property real minimumHeight: Math.ceil(header.implicitHeight + column.spacing + pillPitch
-        + Kirigami.Units.gridUnit * 13)
+        + Kirigami.Units.gridUnit * 13) + 2 * padding
     property real appliedHeight: 0
     readonly property real windowHeight: Math.max(appliedHeight, minimumHeight)
 
@@ -257,8 +259,11 @@ Item {
         id: header
         anchors {
             left: parent.left
+            leftMargin: full.padding
             right: parent.right
+            rightMargin: full.padding
             top: parent.top
+            topMargin: full.padding
         }
         spacing: 6
 
@@ -373,10 +378,13 @@ Item {
         id: viewport
         anchors {
             left: parent.left
+            leftMargin: full.padding
             right: parent.right
+            rightMargin: full.padding
             top: header.bottom
             topMargin: column.spacing
             bottom: parent.bottom
+            bottomMargin: full.padding
         }
         // Only while something is sliding out of it; otherwise a focus ring or
         // a pressed slider handle at the very edge would lose a pixel.
