@@ -42,14 +42,32 @@ Item {
     readonly property int focusRow: Math.floor(gridPanelSlot / 2)
     readonly property real focusProgress: Math.max(sliderPanel.progress, gridPanel.progress)
 
-    // Pills in grid order, before the visibility filter.
-    readonly property var tileOrder: ["wired", "bluetooth", "wifi", "vpn", "power", "fan", "nightlight", "awake", "airplane", "dnd"]
+    // Pills in grid order, before the visibility filter. The order the user
+    // arranged them in wins; a key that is no longer a pill never reaches the
+    // grid, and a pill the stored order has never heard of still turns up.
+    readonly property var pillKeys: ["wired", "bluetooth", "wifi", "vpn", "power", "fan", "nightlight", "awake", "airplane", "dnd"]
+    readonly property var tileOrder: resolveOrder(config.pillOrder)
     readonly property var visibleKeys: tileOrder.filter(key => tileVisible(key))
     readonly property real pillPitch: firstPill.implicitHeight + look.pillSpacing
 
     readonly property bool mediaVisible: config.showMedia && app.media.available
     readonly property bool notificationsVisible: config.showNotifications && app.notifications.available
         && app.notifications.count > 0
+
+    function resolveOrder(stored) {
+        const order = [];
+        for (const key of stored || []) {
+            if (full.pillKeys.indexOf(key) !== -1 && order.indexOf(key) === -1) {
+                order.push(key);
+            }
+        }
+        for (const key of full.pillKeys) {
+            if (order.indexOf(key) === -1) {
+                order.push(key);
+            }
+        }
+        return order;
+    }
 
     function tileVisible(key) {
         switch (key) {

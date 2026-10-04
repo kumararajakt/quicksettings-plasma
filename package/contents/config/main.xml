@@ -6,6 +6,9 @@
   <kcfgfile name=""/>
 
   <group name="Pills">
+    <!-- Empty means the order the applet ships with; the settings page writes
+         every key out, so a pill added later still turns up in the right place. -->
+    <entry name="pillOrder" type="StringList"><default></default></entry>
     <entry name="showWired" type="Bool"><default>true</default></entry>
     <entry name="showBluetooth" type="Bool"><default>true</default></entry>
     <entry name="showWifi" type="Bool"><default>true</default></entry>

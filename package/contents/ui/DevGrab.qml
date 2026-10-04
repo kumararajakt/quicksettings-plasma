@@ -237,6 +237,17 @@ Item {
         }
     }
 
+    Timer {
+        interval: 2500
+        running: grab.plasmoidItem !== null && Qt.application.arguments.includes("qs-order-dump")
+        onTriggered: {
+            const full = grab.plasmoidItem.fullRepresentationItem;
+            console.warn("qs-order-dump: stored", JSON.stringify(full.config.pillOrder),
+                         "order", full.tileOrder.join(","),
+                         "visible", full.visibleKeys.join(","));
+        }
+    }
+
     // `qs-delay=<ms>` waits longer before grabbing, for the slow readers
     // (ddcutil takes a few seconds to find a monitor).
     readonly property int delay: {
