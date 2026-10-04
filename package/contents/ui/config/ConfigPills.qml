@@ -14,6 +14,7 @@ KCM.SimpleKCM {
     property alias cfg_showNightLight: showNightLight.checked
     property alias cfg_showAwake: showAwake.checked
     property alias cfg_showAirplane: showAirplane.checked
+    property alias cfg_showMedia: showMedia.checked
     property alias cfg_showNotifications: showNotifications.checked
     property alias cfg_showDnd: showDnd.checked
     property alias cfg_bodyToggles: bodyToggles.checked
@@ -61,6 +62,10 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: showAirplane
             text: i18n("Airplane Mode")
+        }
+        QQC2.CheckBox {
+            id: showMedia
+            text: i18n("Media Player")
         }
         QQC2.CheckBox {
             id: showNotifications

@@ -25,6 +25,7 @@ PlasmoidItem {
     readonly property alias fan: fan
     readonly property alias contrast: contrast
     readonly property alias tray: tray
+    readonly property alias media: media
     readonly property alias notifications: notifications
     readonly property alias privacy: privacy
 
@@ -117,6 +118,7 @@ PlasmoidItem {
     Backends.SniHost {
         id: tray
     }
+    Backends.Media { id: media }
     Backends.Notifications {
         id: notifications
     }

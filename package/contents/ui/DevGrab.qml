@@ -223,6 +223,20 @@ Item {
         }
     }
 
+    Timer {
+        interval: 2500
+        running: grab.plasmoidItem !== null && Qt.application.arguments.includes("qs-media-dump")
+        onTriggered: {
+            const m = grab.plasmoidItem.media;
+            console.warn("qs-media-dump: player", m.player !== null && m.player !== undefined,
+                         "available", m.available, "status", m.status, "playing", m.playing,
+                         "title='" + m.title + "'", "subtitle='" + m.subtitle + "'",
+                         "icon='" + m.iconName + "'", "art='" + m.artUrl + "'",
+                         "len", m.length, "pos", m.position, "progress", m.progress.toFixed(3),
+                         "seek", m.canSeek, "prev", m.canGoPrevious, "next", m.canGoNext);
+        }
+    }
+
     // `qs-delay=<ms>` waits longer before grabbing, for the slow readers
     // (ddcutil takes a few seconds to find a monitor).
     readonly property int delay: {

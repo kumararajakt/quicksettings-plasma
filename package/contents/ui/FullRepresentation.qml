@@ -47,6 +47,10 @@ Item {
     readonly property var visibleKeys: tileOrder.filter(key => tileVisible(key))
     readonly property real pillPitch: firstPill.implicitHeight + look.pillSpacing
 
+    readonly property bool mediaVisible: config.showMedia && app.media.available
+    readonly property bool notificationsVisible: config.showNotifications && app.notifications.available
+        && app.notifications.count > 0
+
     function tileVisible(key) {
         switch (key) {
         case "wired": return config.showWired;
@@ -603,14 +607,27 @@ Item {
             }
 
             Rectangle {
-                visible: full.config.showNotifications && full.app.notifications.available && full.app.notifications.count > 0
+                visible: full.mediaVisible
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color: look.rule
+            }
+
+            Panels.MediaPanel {
+                visible: full.mediaVisible
+                app: full.app
+                style: look
+            }
+
+            Rectangle {
+                visible: full.notificationsVisible
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
                 color: look.rule
             }
 
             Panels.NotificationsPanel {
-                visible: full.config.showNotifications && full.app.notifications.available && full.app.notifications.count > 0
+                visible: full.notificationsVisible
                 app: full.app
                 style: look
             }
