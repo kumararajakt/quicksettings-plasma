@@ -29,12 +29,33 @@ ColumnLayout {
 
     spacing: Kirigami.Units.smallSpacing
 
+
     RowLayout {
         Layout.fillWidth: true
-        spacing: Kirigami.Units.smallSpacing
+        spacing: 12
 
-        Item {
+        Kirigami.Icon {
+            Layout.preferredWidth: Kirigami.Units.iconSizes.small
+            Layout.preferredHeight: Kirigami.Units.iconSizes.small
+            source: "notifications"
+            fallback: "notifications-applet-symbolic"
+            isMask: true
+        }
+
+        PlasmaComponents.Label {
             Layout.fillWidth: true
+            text: i18n("Notifications")
+            font.bold: true
+            font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.15
+            elide: Text.ElideRight
+            textFormat: Text.PlainText
+        }
+
+        PlasmaComponents.Label {
+            visible: notificationsRoot.app.notifications.count > 0
+            text: notificationsRoot.app.notifications.count
+            color: notificationsRoot.style.textMuted
+            textFormat: Text.PlainText
         }
 
         IconButton {
