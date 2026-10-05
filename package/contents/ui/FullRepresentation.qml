@@ -50,9 +50,11 @@ Item {
     readonly property var visibleKeys: tileOrder.filter(key => tileVisible(key))
     readonly property real pillPitch: firstPill.implicitHeight + look.pillSpacing
 
-    readonly property bool mediaVisible: config.showMedia && app.media.available
-    readonly property bool notificationsVisible: config.showNotifications && app.notifications.available
-        && app.notifications.count > 0
+    readonly property bool mediaVisible: config.showMedia && popupVisibility("media")
+        && app.media.available
+    readonly property bool notificationsVisible: config.showNotifications
+        && popupVisibility("notifications")
+        && app.notifications.available && app.notifications.count > 0
 
     function resolveOrder(stored) {
         const order = [];
@@ -69,7 +71,26 @@ Item {
         return order;
     }
 
+    // The General page's per-entry dropdown. Only "panel" and "none" take a tile
+    // out of the grid; "auto" and "both" leave it in, so an entry nobody has
+    // touched behaves exactly as it did before the dropdown existed.
+    function popupVisibility(key) {
+        const mode = config[visibilityKey(key)];
+        return mode !== "none" && mode !== "panel";
+    }
+
+    function visibilityKey(key) {
+        switch (key) {
+        case "nightlight": return "visibilityNightLight";
+        case "notifications": return "visibilityNotifications";
+        }
+        return "visibility" + key.charAt(0).toUpperCase() + key.slice(1);
+    }
+
     function tileVisible(key) {
+        if (!popupVisibility(key)) {
+            return false;
+        }
         switch (key) {
         case "wired": return config.showWired;
         case "bluetooth": return config.showBluetooth;

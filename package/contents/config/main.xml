@@ -21,6 +21,21 @@
     <entry name="showMedia" type="Bool"><default>true</default></entry>
     <entry name="showNotifications" type="Bool"><default>true</default></entry>
     <entry name="showDnd" type="Bool"><default>true</default></entry>
+    <!-- Where each entry lives: both | popup | panel | none | auto. Only wifi
+         and bluetooth have anything to show in the panel button today, so the
+         rest default to popup rather than claiming both and showing one. -->
+    <entry name="visibilityWired" type="String"><default>popup</default></entry>
+    <entry name="visibilityBluetooth" type="String"><default>both</default></entry>
+    <entry name="visibilityWifi" type="String"><default>both</default></entry>
+    <entry name="visibilityVpn" type="String"><default>popup</default></entry>
+    <entry name="visibilityPower" type="String"><default>popup</default></entry>
+    <entry name="visibilityFan" type="String"><default>popup</default></entry>
+    <entry name="visibilityNightLight" type="String"><default>popup</default></entry>
+    <entry name="visibilityAwake" type="String"><default>popup</default></entry>
+    <entry name="visibilityAirplane" type="String"><default>popup</default></entry>
+    <entry name="visibilityDnd" type="String"><default>popup</default></entry>
+    <entry name="visibilityMedia" type="String"><default>popup</default></entry>
+    <entry name="visibilityNotifications" type="String"><default>popup</default></entry>
     <!-- true: the pill toggles and the arrow opens its panel (GNOME's way round). -->
     <entry name="bodyToggles" type="Bool"><default>true</default></entry>
   </group>

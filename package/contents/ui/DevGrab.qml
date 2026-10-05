@@ -31,7 +31,7 @@ Item {
         if (!Qt.application.arguments.includes("qs-check-config")) {
             return;
         }
-        for (const page of ["ConfigPills", "ConfigAppearance", "ConfigSliders", "ConfigBehaviour"]) {
+        for (const page of ["ConfigGeneral", "ConfigPills", "ConfigAppearance", "ConfigSliders", "ConfigBehaviour"]) {
             const component = Qt.createComponent("config/" + page + ".qml");
             if (component.status !== Component.Ready) {
                 console.warn("qs-check-config:", page, "FAILED:", component.errorString());

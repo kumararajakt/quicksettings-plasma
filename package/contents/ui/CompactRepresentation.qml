@@ -24,9 +24,20 @@ MouseArea {
     readonly property bool showTrayIcons: config.panelShowTrayIcons && app.tray.available
     readonly property var trayItems: showTrayIcons ? app.tray.items : []
 
+    // Per-entry panel visibility from the General page, on top of the older
+    // pair of switches that still turn the pair of network icons off together.
     readonly property bool showNetworkIcons: config.panelShowNetworkIcons
-    readonly property bool showWifiIcon: showNetworkIcons && app.network.wifiAvailable
-    readonly property bool showBluetoothIcon: showNetworkIcons && app.bluetooth.available
+    readonly property bool showWifiIcon: showNetworkIcons && inPanel("wifi")
+        && app.network.wifiAvailable
+    readonly property bool showBluetoothIcon: showNetworkIcons && inPanel("bluetooth")
+        && app.bluetooth.available
+
+    // "auto" means wherever the entry has something to show, which for the two
+    // network entries is both places; the others have no panel icon at all.
+    function inPanel(key) {
+        const mode = config["visibility" + key.charAt(0).toUpperCase() + key.slice(1)];
+        return mode === "both" || mode === "panel" || mode === "auto";
+    }
     // Signal bars once a network is joined, the plain fan before that.
     readonly property string wifiIconName: app.network.wifiEnabled && app.network.wifiName !== ""
             ? app.network.signalIcon(app.network.wifiStrength) : "network-wireless-symbolic"
