@@ -24,6 +24,13 @@ MouseArea {
     readonly property bool showTrayIcons: config.panelShowTrayIcons && app.tray.available
     readonly property var trayItems: showTrayIcons ? app.tray.items : []
 
+    readonly property bool showNetworkIcons: config.panelShowNetworkIcons
+    readonly property bool showWifiIcon: showNetworkIcons && app.network.wifiAvailable
+    readonly property bool showBluetoothIcon: showNetworkIcons && app.bluetooth.available
+    // Signal bars once a network is joined, the plain fan before that.
+    readonly property string wifiIconName: app.network.wifiEnabled && app.network.wifiName !== ""
+            ? app.network.signalIcon(app.network.wifiStrength) : "network-wireless-symbolic"
+
     readonly property bool showPrivacy: config.panelShowPrivacy && app.privacy.active.length > 0
 
     readonly property int iconSize: Kirigami.Units.iconSizes.roundedIconSize(
@@ -79,6 +86,24 @@ MouseArea {
             visible: compact.showLabel
             text: i18nc("battery percentage", "%1%", compact.app.battery.percent)
             textFormat: Text.PlainText
+        }
+
+        // Readouts like the battery icon: part of the button, not controls, so
+        // the click goes to the popup. Each appears only where the hardware
+        // is.
+        Kirigami.Icon {
+            visible: compact.showWifiIcon
+            Layout.preferredWidth: compact.iconSize
+            Layout.preferredHeight: compact.iconSize
+            Layout.alignment: Qt.AlignVCenter
+            source: compact.wifiIconName
+        }
+        Kirigami.Icon {
+            visible: compact.showBluetoothIcon
+            Layout.preferredWidth: compact.iconSize
+            Layout.preferredHeight: compact.iconSize
+            Layout.alignment: Qt.AlignVCenter
+            source: "network-bluetooth-symbolic"
         }
 
         // Privacy and keyboard state, sitting beside the tray. Not controls:

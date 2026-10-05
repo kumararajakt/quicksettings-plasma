@@ -22,6 +22,7 @@ Item {
 
     // Pill readouts, filled in by _recompute().
     property string wifiName: ""
+    property int wifiStrength: 0
     property bool wifiConnecting: false
     property bool wiredActive: false
     property string wiredName: ""
@@ -37,6 +38,20 @@ Item {
 
     function isVpnType(type) {
         return type === PlasmaNM.Enums.Vpn || type === net.typeWireGuard;
+    }
+
+    // Breeze cuts the signal icons into five steps.
+    function signalIcon(strength) {
+        if (strength >= 80) {
+            return "network-wireless-signal-excellent-symbolic";
+        }
+        if (strength >= 55) {
+            return "network-wireless-signal-good-symbolic";
+        }
+        if (strength >= 30) {
+            return "network-wireless-signal-ok-symbolic";
+        }
+        return strength >= 5 ? "network-wireless-signal-weak-symbolic" : "network-wireless-signal-none-symbolic";
     }
 
     function setWifi(on) {
@@ -97,7 +112,7 @@ Item {
     property var _vpnFirstRow: null
 
     function _recompute() {
-        let wifiName = "", wifiConnecting = false;
+        let wifiName = "", wifiStrength = 0, wifiConnecting = false;
         let wired = null, wiredUp = false;
         let vpnActive = null, vpnFirst = null, vpnCount = 0;
 
@@ -110,6 +125,7 @@ Item {
             if (row.type === PlasmaNM.Enums.Wireless) {
                 if (up && !wifiName) {
                     wifiName = row.ssid || row.name;
+                    wifiStrength = row.signal;
                 } else if (row.connectionState === PlasmaNM.Enums.Activating) {
                     wifiConnecting = true;
                 }
@@ -129,6 +145,7 @@ Item {
         }
 
         net.wifiName = wifiName;
+        net.wifiStrength = wifiStrength;
         net.wifiConnecting = wifiConnecting;
         net._wiredRow = wired ? wired.snapshot() : null;
         net.wiredActive = wiredUp;
@@ -160,6 +177,7 @@ Item {
             required property var model
             readonly property int type: model.Type
             readonly property int connectionState: model.ConnectionState
+            readonly property int signal: model.Signal ?? 0
             readonly property string name: model.ItemUniqueName ?? ""
             readonly property string ssid: model.Ssid ?? ""
 
@@ -174,6 +192,7 @@ Item {
 
             onConnectionStateChanged: Qt.callLater(net._recompute)
             onNameChanged: Qt.callLater(net._recompute)
+            onSignalChanged: Qt.callLater(net._recompute)
         }
         onObjectAdded: Qt.callLater(net._recompute)
         onObjectRemoved: Qt.callLater(net._recompute)

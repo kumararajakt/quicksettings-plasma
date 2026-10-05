@@ -17,19 +17,6 @@ PanelBody {
     // the per-band, per-AP duplicates of one SSID, so this is the best few.
     readonly property int limit: 12
 
-    function signalIcon(strength) {
-        if (strength >= 80) {
-            return "network-wireless-signal-excellent-symbolic";
-        }
-        if (strength >= 55) {
-            return "network-wireless-signal-good-symbolic";
-        }
-        if (strength >= 30) {
-            return "network-wireless-signal-ok-symbolic";
-        }
-        return strength >= 5 ? "network-wireless-signal-weak-symbolic" : "network-wireless-signal-none-symbolic";
-    }
-
     // Rescan when the panel is open rather than as it opens, so results
     // arriving do not reshuffle the list under the animation.
     function opened() {
@@ -54,7 +41,7 @@ PanelBody {
                 readonly property bool up: slot.model.ConnectionState === PlasmaNM.Enums.Activated
 
                 style: body.style
-                iconName: body.signalIcon(slot.model.Signal)
+                iconName: app.network.signalIcon(slot.model.Signal)
                 label: slot.model.ItemUniqueName ?? ""
                 busy: slot.model.ConnectionState === PlasmaNM.Enums.Activating
                       || slot.model.ConnectionState === PlasmaNM.Enums.Deactivating

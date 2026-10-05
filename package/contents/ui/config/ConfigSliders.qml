@@ -11,6 +11,7 @@ KCM.SimpleKCM {
     property alias cfg_panelShowBatteryIcon: panelShowBatteryIcon.checked
     property alias cfg_panelShowPercentage: panelShowPercentage.checked
     property alias cfg_panelShowTrayIcons: panelShowTrayIcons.checked
+    property alias cfg_panelShowNetworkIcons: panelShowNetworkIcons.checked
     property alias cfg_panelShowPrivacy: panelShowPrivacy.checked
 
     Kirigami.FormLayout {
@@ -69,6 +70,18 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: panelShowTrayIcons
             text: i18n("Show application tray icons")
+        }
+        QQC2.CheckBox {
+            id: panelShowNetworkIcons
+            text: i18n("Show Wi-Fi and Bluetooth indicators")
+        }
+        QQC2.Label {
+            leftPadding: panelShowNetworkIcons.indicator.width + panelShowNetworkIcons.spacing
+            text: i18n("Each one appears only where the hardware is, and the Wi-Fi icon shows the signal once a network is joined. Both are readouts: the click still opens the popup.")
+            font: Kirigami.Theme.smallFont
+            opacity: 0.7
+            wrapMode: Text.WordWrap
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 22
         }
         QQC2.CheckBox {
             id: panelShowPrivacy
