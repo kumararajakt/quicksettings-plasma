@@ -28,6 +28,7 @@ Item {
 
     readonly property var config: Plasmoid.configuration
 
+
     // The open panel, or "". Only ever one: reopening the popup starts
     // collapsed rather than restoring whatever was last expanded.
     property string expandedKey: ""
@@ -658,17 +659,24 @@ Item {
                 style: look
             }
 
-            Rectangle {
+            Kirigami.Separator {
                 visible: full.notificationsVisible
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                color: look.rule
+            }
+
+            Item {
+                Layout.preferredHeight: 1
             }
 
             Panels.NotificationsPanel {
                 visible: full.notificationsVisible
                 app: full.app
                 style: look
+            }
+
+            Item {
+                Layout.preferredHeight: 1
             }
         }
     }
